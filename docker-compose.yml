@@ -1,0 +1,42 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8765:80"
+    depends_on:
+      - db_mysql
+      - keycloak
+    volumes:
+      - .:/var/www/html
+      - ./logs:/var/www/html/logs
+    networks:
+      - rede_subjects
+
+  db_mysql:
+    image: mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_DATABASE: sggh_subjects
+    volumes:
+      - ./create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - rede_subjects
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: start-dev
+    networks:
+      - rede_subjects
+
+networks:
+  rede_subjects:
+    driver: bridge

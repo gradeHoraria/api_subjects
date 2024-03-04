@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\View\JsonView;
 
 /**
  * Application Controller
@@ -43,11 +44,29 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->viewBuilder()->setOption('serialize', true);
+        $this->RequestHandler->renderAs($this, 'json');
 
         /*
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/4/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
+    }
+
+    /**
+     * method that provides all the views you want to support
+     */
+    public function viewClasses(): array
+    {
+        return [JsonView::class];
+    }
+
+    /**
+     * method debug to print the variable
+     */
+    public function debug($var)
+    {
+        var_dump($var);
     }
 }

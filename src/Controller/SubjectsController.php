@@ -18,9 +18,8 @@ class SubjectsController extends AppController
      */
     public function index()
     {
-        $subjects = $this->paginate($this->Subjects);
-
-        $this->set(compact('subjects'));
+        $subjects = $this->Subjects->find('all');
+        $this->set('subjects', $subjects);
     }
 
     /**
@@ -36,7 +35,7 @@ class SubjectsController extends AppController
             'contain' => [],
         ]);
 
-        $this->set(compact('subject'));
+        $this->set('subject', $subject);
     }
 
     /**
@@ -50,13 +49,14 @@ class SubjectsController extends AppController
         if ($this->request->is('post')) {
             $subject = $this->Subjects->patchEntity($subject, $this->request->getData());
             if ($this->Subjects->save($subject)) {
-                $this->Flash->success(__('The subject has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->view($subject->id);
             }
-            $this->Flash->error(__('The subject could not be saved. Please, try again.'));
+            else{
+
+                $this->Flash->error(__('The subject could not be saved. Please, try again.'));
+            }
         }
-        $this->set(compact('subject'));
+
     }
 
     /**
@@ -73,14 +73,14 @@ class SubjectsController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $subject = $this->Subjects->patchEntity($subject, $this->request->getData());
-            if ($this->Subjects->save($subject)) {
-                $this->Flash->success(__('The subject has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+            if ($this->Subjects->save($subject)) {
+                $this->view($subject->id);
             }
-            $this->Flash->error(__('The subject could not be saved. Please, try again.'));
+            else {
+                $this->Flash->error(__('The subject could not be saved. Please, try again.'));
+            }
         }
-        $this->set(compact('subject'));
     }
 
     /**
@@ -93,13 +93,14 @@ class SubjectsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
+        $res = '';
         $subject = $this->Subjects->get($id);
         if ($this->Subjects->delete($subject)) {
-            $this->Flash->success(__('The subject has been deleted.'));
+            $res = 'The subject has been deleted.';
         } else {
-            $this->Flash->error(__('The subject could not be deleted. Please, try again.'));
+            $res = 'The subject could not be deleted. Please, try again.';
         }
 
-        return $this->redirect(['action' => 'index']);
+        $this->set('res', $res);
     }
 }
